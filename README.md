@@ -6,6 +6,47 @@ A configurable, resource-aware agent system for Claude, AGY, OpenCode, and addit
 
 `adaptive-multi-agent-orchestrator`
 
+
+## Install with npx skills
+
+Requires Node.js 22.20.0 or later (per the current Skills CLI requirements).
+
+Install all skills to the agents detected by the CLI in the current project:
+
+```bash
+npx skills add mahmoudredash/adaptive-agent-skills- --all
+```
+
+List available skills before installing:
+
+```bash
+npx skills add mahmoudredash/adaptive-agent-skills- --list
+```
+
+Install selected skills to selected agents:
+
+```bash
+npx skills add mahmoudredash/adaptive-agent-skills- \
+  --skill adaptive-multi-agent-orchestrator \
+  --skill agent-role-model-routing \
+  --agent claude-code \
+  --agent opencode
+```
+
+Use `--global` to install for the current user across projects:
+
+```bash
+npx skills add mahmoudredash/adaptive-agent-skills- --all --global
+```
+
+Update installed skills with `npx skills check` and `npx skills update`. See the [Skills CLI documentation](https://github.com/vercel-labs/skills/blob/main/docs/commands.md).
+
+**Important:** The Skills CLI installs the `SKILL.md` skills; it does not automatically copy this repository's project policy file. Copy `.config/agent-model-policy.yaml` separately into the target project's `.config/` directory as described below.
+
+## العربية
+
+اقرأ [README بالعربية](README.ar.md) للحصول على شرح التثبيت والإعداد باللغة العربية.
+
 ## Project configuration location
 
 The policy file is deliberately stored under a **hidden, project-local `.config/` directory**:
