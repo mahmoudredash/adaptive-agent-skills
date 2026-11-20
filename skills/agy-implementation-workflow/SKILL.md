@@ -8,7 +8,7 @@ description: Implement approved, scoped tasks using the configured agent role an
 AGY is the default implementation agent, but this skill is role-based and may be assigned to another configured agent when the user authorizes a takeover.
 
 ## Before editing
-- Read the project instructions and `config/agent-model-policy.yaml`.
+- Read the project instructions and `.config/agent-model-policy.yaml`.
 - Confirm task approval, scope, acceptance criteria, model selection, and resource capacity.
 - Perform read-only discovery first.
 - Check Git/worktree/index state and preserve all existing user changes.
