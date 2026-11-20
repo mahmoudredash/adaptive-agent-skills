@@ -1,0 +1,138 @@
+# Copy to config/agent-model-policy.yaml and edit.
+# Do not use example model IDs as real IDs. Enter IDs exactly as exposed by your runtimes.
+
+version: 2
+
+user_control:
+  model_catalog_owner: user
+  user_supplied_models_only: true
+  orchestrator_may_recommend: true
+  orchestrator_may_change_primary_without_approval: false
+  orchestrator_may_reorder_fallbacks_without_approval: false
+  require_explanation_for_each_model: true
+
+# Add every model you are willing to use. Explain WHEN you want it used.
+# `use_when` is your operating guidance, not marketing copy.
+model_catalog:
+  - id: "ENTER_EXACT_MODEL_ID"
+    runtime: "Claude Code / AGY / OpenCode / other"
+    provider: "ENTER_PROVIDER"
+    use_when: |
+      Explain the tasks for which you want this model used.
+      Example: architecture, difficult reasoning, large refactors, or fast routine edits.
+    strengths:
+      - "ENTER_STRENGTH"
+    limitations:
+      - "ENTER_LIMITATION"
+    avoid_when:
+      - "ENTER_CASE_WHERE_NOT_TO_USE"
+    quota_notes: "Optional notes about plan, quota, or rate limits."
+
+agents:
+  claude:
+    enabled: true
+    default_role: technical_lead
+    allowed_roles:
+      - technical_lead
+      - coordinator
+      - architect
+      - implementer
+      - reviewer
+      - tester
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models:
+      - "ENTER_MODEL_ID"
+    model_selection_policy: recommend_from_catalog_only
+    may_take_over_roles:
+      - coordinator
+      - architect
+      - implementer
+      - reviewer
+      - tester
+
+  agy:
+    enabled: true
+    default_role: implementer
+    allowed_roles:
+      - implementer
+      - investigator
+      - tester
+      - reviewer
+      - coordinator
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models:
+      - "ENTER_MODEL_ID"
+    model_selection_policy: recommend_from_catalog_only
+    may_take_over_roles:
+      - implementer
+      - investigator
+      - tester
+
+  opencode:
+    enabled: true
+    default_role: independent_qa
+    allowed_roles:
+      - independent_qa
+      - reviewer
+      - tester
+      - implementer
+      - investigator
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models:
+      - "ENTER_MODEL_ID"
+    model_selection_policy: recommend_from_catalog_only
+    may_take_over_roles:
+      - independent_qa
+      - reviewer
+      - tester
+      - implementer
+      - investigator
+
+# Explicitly define what should happen when an agent cannot continue.
+# `eligible_agents` are ordered by your preference.
+# `role` is the role the replacement is allowed to assume.
+quota_fallback:
+  claude:
+    on_quota_exhausted:
+      action: transfer_or_pause
+      eligible_agents: ["agy", "opencode"]
+      role: "coordinator_or_implementer_as_configured"
+      require_user_approval_for_role_change: true
+  agy:
+    on_quota_exhausted:
+      action: transfer_or_pause
+      eligible_agents: ["opencode", "claude"]
+      role: "implementer"
+      require_user_approval_for_role_change: true
+  opencode:
+    on_quota_exhausted:
+      action: transfer_or_pause
+      eligible_agents: ["agy", "claude"]
+      role: "independent_qa_or_tester_as_configured"
+      require_user_approval_for_role_change: true
+
+# Optional manual override examples:
+# If Claude and AGY quotas are exhausted, let OpenCode implement:
+manual_overrides:
+  allow_opencode_only_mode: false
+  opencode_only_mode_roles:
+    - implementer
+    - investigator
+    - tester
+  independent_qa_agent_when_opencode_implements: "REQUIRED_DIFFERENT_AGENT_OR_EXTERNAL_REVIEW"
+  allow_single_agent_to_self_review_as_independent: false
+
+resource_policy:
+  workspace_mode: shared_workspace_by_default
+  worktree_or_clone_requires_explicit_user_request: true
+  concurrency: adaptive
+  reserve_machine_capacity: conservative
+  queue_when_capacity_is_insufficient: true
+  never_kill_running_agents_automatically: true
+
+handoff:
+  require_task_state_checkpoint: true
+  require_explicit_file_ownership_transfer: true
+  prohibit_concurrent_writes_to_same_file: true
+  preserve_scope_and_acceptance_criteria: true
+  report_model_or_agent_substitution: true
