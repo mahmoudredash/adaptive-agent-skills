@@ -6,7 +6,7 @@ description: Select user-approved models, route roles across agents, and handle 
 # Agent Role and Model Routing
 
 ## Configuration is authoritative
-Read `config/agent-model-policy.yaml`. Treat it as the source of truth for:
+Read `.config/agent-model-policy.yaml`. Treat it as the source of truth for:
 - Available agents and models.
 - Primary and fallback model order.
 - Model-specific `use_when`, strengths, limitations and exclusions.
