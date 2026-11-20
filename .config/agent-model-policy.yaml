@@ -1,0 +1,90 @@
+# Project-local agent policy.
+# Copy this file to the target project's .config/agent-model-policy.yaml and edit it.
+# Replace every placeholder with exact model IDs exposed by your installed runtimes.
+
+version: 2
+
+user_control:
+  model_catalog_owner: user
+  user_supplied_models_only: true
+  orchestrator_may_recommend: true
+  orchestrator_may_change_primary_without_approval: false
+  orchestrator_may_reorder_fallbacks_without_approval: false
+  require_explanation_for_each_model: true
+
+# Describe WHEN you want each model used. Add one entry per model you approve.
+model_catalog:
+  - id: "ENTER_EXACT_MODEL_ID"
+    runtime: "Claude Code / AGY / OpenCode / other"
+    provider: "ENTER_PROVIDER"
+    use_when: |
+      Example: Use for architecture, difficult reasoning, cross-screen changes,
+      and complex debugging. Explain your own preferred use cases here.
+    strengths:
+      - "ENTER_STRENGTH"
+    limitations:
+      - "ENTER_LIMITATION"
+    avoid_when:
+      - "ENTER_WHEN_NOT_TO_USE"
+    quota_notes: "Optional quota or rate-limit notes."
+
+agents:
+  claude:
+    enabled: true
+    default_role: technical_lead
+    allowed_roles: [technical_lead, coordinator, architect, implementer, reviewer, tester]
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models: ["ENTER_FALLBACK_MODEL_ID"]
+    may_take_over_roles: [coordinator, architect, implementer, reviewer, tester]
+
+  agy:
+    enabled: true
+    default_role: implementer
+    allowed_roles: [implementer, investigator, tester, reviewer, coordinator]
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models: ["ENTER_FALLBACK_MODEL_ID"]
+    may_take_over_roles: [implementer, investigator, tester]
+
+  opencode:
+    enabled: true
+    default_role: independent_qa
+    allowed_roles: [independent_qa, reviewer, tester, implementer, investigator]
+    primary_model: "ENTER_MODEL_ID"
+    fallback_models: ["ENTER_FALLBACK_MODEL_ID"]
+    may_take_over_roles: [independent_qa, reviewer, tester, implementer, investigator]
+
+# Ordered replacement agents when an agent's provider quota is exhausted.
+# The replacement must support the requested role and have the required tools.
+quota_fallback:
+  claude:
+    on_quota_exhausted:
+      eligible_agents: [agy, opencode]
+      require_user_approval_for_role_change: true
+  agy:
+    on_quota_exhausted:
+      eligible_agents: [opencode, claude]
+      require_user_approval_for_role_change: true
+  opencode:
+    on_quota_exhausted:
+      eligible_agents: [agy, claude]
+      require_user_approval_for_role_change: true
+
+# Set true only if you explicitly accept OpenCode as the sole available worker.
+manual_overrides:
+  allow_opencode_only_mode: false
+  opencode_only_mode_roles: [implementer, investigator, tester]
+  allow_single_agent_to_self_review_as_independent: false
+
+resource_policy:
+  workspace_mode: shared_workspace_by_default
+  worktree_or_clone_requires_explicit_user_request: true
+  concurrency: adaptive
+  queue_when_capacity_is_insufficient: true
+  never_kill_running_agents_automatically: true
+
+handoff:
+  require_task_state_checkpoint: true
+  require_explicit_file_ownership_transfer: true
+  prohibit_concurrent_writes_to_same_file: true
+  preserve_scope_and_acceptance_criteria: true
+  report_model_or_agent_substitution: true
