@@ -6,7 +6,7 @@ description: Orchestrate multiple coding agents with adaptive concurrency, user-
 # Adaptive Multi-Agent Orchestrator
 
 ## First action
-Locate and read the project configuration at `config/agent-model-policy.yaml`. If it does not exist, use the template only as a schema and ask the user to complete it. Never invent available agents, model IDs, quota details, or runtime capabilities.
+Locate and read the project configuration at `.config/agent-model-policy.yaml`. If it does not exist, use the template only as a schema and ask the user to complete it. Never invent available agents, model IDs, quota details, or runtime capabilities.
 
 ## User owns model policy
 The user supplies:
